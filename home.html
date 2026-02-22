@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Booking - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <h1 class="text-2xl font-bold text-red-600">MovieBook</h1>
+          </div>
+          <div class="hidden md:block ml-10">
+            <div class="flex items-baseline space-x-4">
+              <a href="home.html" class="bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+              <a href="movies.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Movies</a>
+              <a href="theaters.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Theaters</a>
+              <a href="login.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-red-600 to-red-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6">Book Your Movie Tickets</h1>
+        <p class="text-xl md:text-2xl mb-8">Experience the magic of cinema with the latest blockbuster movies</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button class="bg-white text-red-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>Watch Trailer
+          </button>
+          <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-red-600 transition-colors">
+            <i data-lucide="ticket" class="w-5 h-5 inline mr-2"></i>Book Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+          <div class="relative">
+            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" id="searchInput" placeholder="Search movies..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+          </div>
+        </div>
+        <div class="md:w-48">
+        <select id="genreFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+            <option value="all">All Genres</option>
+            <option value="Action">Action</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Drama">Drama</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Horror">Horror</option>
+            <option value="Romance">Romance</option>
+            <option value="Thriller">Thriller</option>
+            <option value="Animation">Animation</option>
+          </select>
+        </div>
+        <button onclick="findNearbyTheaters()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+          <i data-lucide="map-pin" class="w-5 h-5 inline mr-2"></i>Find Theaters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movies Grid -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">Now Showing</h2>
+    <div id="moviesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Movies will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Theater Modal -->
+  <div id="theaterModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Nearby Theaters</h3>
+            <button onclick="closeTheaterModal()" class="text-gray-400 hover:text-gray-600">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          <div id="theaterContent">
+            <!-- Theater content will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Movie data
+    const movies = [
+      {
+        id: '1',
+        title: 'Avengers: Endgame',
+        genre: 'Action',
+        rating: 8.5,
+        duration: 181,
+        year: 2019,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_FMjpg_UX1000_.jpg',
+        price: 150,
+        nowShowing: true
+      },
+      {
+        id: '2',
+        title: 'The Batman',
+        genre: 'Action',
+        rating: 8.2,
+        duration: 176,
+        year: 2022,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMDdmMTBiNTYtMDIzNi00NGVlLWIzMDYtZTk3MTQ3NGQxZGEwXkEyXkFqcGdeQXVyMzMwOTU5MDk@._V1_FMjpg_UX1000_.jpg',
+        price: 180,
+        nowShowing: true
+      },
+      {
+        id: '3',
+        title: 'Spider-Man: No Way Home',
+        genre: 'Action',
+        rating: 8.7,
+        duration: 148,
+        year: 2021,
+        poster: 'https://m.media-amazon.com/images/M/MV5BZWMyYzFjYTYtNTRjYi00OGExLWE2YzgtOGRmYjAxZTU3NzBiXkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_FMjpg_UX1000_.jpg',
+        price: 170,
+        nowShowing: true
+      },
+      {
+        id: '4',
+        title: 'Dune',
+        genre: 'Sci-Fi',
+        rating: 8.0,
+        duration: 155,
+        year: 2021,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@._V1_FMjpg_UX1000_.jpg',
+        price: 170,
+        nowShowing: true
+      },
+      {
+        id: '5',
+        title: 'Jawan',
+        genre: 'Action',
+        rating: 7.5,
+        duration: 169,
+        year: 2023,
+        poster: 'https://m.media-amazon.com/images/M/MV5BZjE4ZmM2MzQtMzgzNS00MmFiLTgwYWYtZGJjNTM4NjYzYzliXkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_FMjpg_UX1000_.jpg',
+        price: 160,
+        nowShowing: true
+      },
+      {
+        id: '6',
+        title: 'Tiger Zinda Hai',
+        genre: 'Action',
+        rating: 6.2,
+        duration: 161,
+        year: 2017,
+        poster: 'https://m.media-amazon.com/images/M/MV5BYTNhZDFmZTQtOTg2ZC00NzE4LWI1ZjctODk4YzE0YzU3MmExXkEyXkFqcGdeQXVyNTE0NDY5Njc@._V1_FMjpg_UX1000_.jpg',
+        price: 140,
+        nowShowing: true
+      },
+      {
+        id: '7',
+        title: 'Brahmāstra: Part One – Shiva',
+        genre: 'Action',
+        rating: 5.6,
+        duration: 167,
+        year: 2022,
+        poster: 'https://m.media-amazon.com/images/M/MV5BZjI0YTFmNWQtYzg3Zi00MzNjLWIzZjQtNDc0NWYzYjBhYzBkXkEyXkFqcGdeQXVyODk2ODI3MTU@._V1_FMjpg_UX1000_.jpg',
+        price: 155,
+        nowShowing: true
+      },
+      {
+        id: '8',
+        title: 'War',
+        genre: 'Action',
+        rating: 6.5,
+        duration: 154,
+        year: 2019,
+        poster: 'https://m.media-amazon.com/images/M/MV5BNTlmNzRjNzctNTZiMC00OGE5LWI1MzktZTgzYTY4NGM1NzU1XkEyXkFqcGdeQXVyOTc2MTdiOTg@._V1_FMjpg_UX1000_.jpg',
+        price: 145,
+        nowShowing: true
+      },
+      {
+        id: '9',
+        title: 'Pathaan',
+        genre: 'Action',
+        rating: 6.6,
+        duration: 146,
+        year: 2023,
+        poster: 'https://m.media-amazon.com/images/M/MV5BM2QzM2JiNTMtYjU4Ny00MDZkLTk3MmQtMWI4ZmVkMjY5YzliXkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_FMjpg_UX1000_.jpg',
+        price: 165,
+        nowShowing: true
+      },
+      {
+        id: '10',
+        title: 'RRR',
+        genre: 'Action',
+        rating: 7.8,
+        duration: 187,
+        year: 2022,
+        poster: 'https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00Zjc5LWFkM2MtNjg0OTY4ZTlhZGZiXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg',
+        price: 175,
+        nowShowing: true
+      },
+      {
+        id: '11',
+        title: 'The Shawshank Redemption',
+        genre: 'Drama',
+        rating: 9.3,
+        duration: 142,
+        year: 1994,
+        poster: 'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_FMjpg_UX1000_.jpg',
+        price: 120,
+        nowShowing: true
+      },
+      {
+        id: '12',
+        title: 'Inception',
+        genre: 'Sci-Fi',
+        rating: 8.8,
+        duration: 148,
+        year: 2010,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg',
+        price: 160,
+        nowShowing: true
+      },
+      {
+        id: '13',
+        title: 'The Dark Knight',
+        genre: 'Action',
+        rating: 9.0,
+        duration: 152,
+        year: 2008,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_FMjpg_UX1000_.jpg',
+        price: 140,
+        nowShowing: true
+      },
+      {
+        id: '14',
+        title: 'Pulp Fiction',
+        genre: 'Thriller',
+        rating: 8.9,
+        duration: 154,
+        year: 1994,
+        poster: 'https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg',
+        price: 130,
+        nowShowing: true
+      },
+      {
+        id: '15',
+        title: 'Forrest Gump',
+        genre: 'Drama',
+        rating: 8.8,
+        duration: 142,
+        year: 1994,
+        poster: 'https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_FMjpg_UX1000_.jpg',
+        price: 125,
+        nowShowing: true
+      },
+      {
+        id: '16',
+        title: 'The Godfather',
+        genre: 'Drama',
+        rating: 9.2,
+        duration: 175,
+        year: 1972,
+        poster: 'https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_FMjpg_UX1000_.jpg',
+        price: 135,
+        nowShowing: true
+      },
+      {
+        id: '17',
+        title: 'Interstellar',
+        genre: 'Sci-Fi',
+        rating: 8.6,
+        duration: 169,
+        year: 2014,
+        poster: 'https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_FMjpg_UX1000_.jpg',
+        price: 155,
+        nowShowing: true
+      },
+      {
+        id: '18',
+        title: 'Parasite',
+        genre: 'Thriller',
+        rating: 8.5,
+        duration: 132,
+        year: 2019,
+        poster: 'https://m.media-amazon.com/images/M/MV5BYWZjMjZkZGUtZTE2ZC00ZjQ3LWE5NTQtOTg5ZDAzZmMxOGI4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg',
+        price: 145,
+        nowShowing: true
+      },
+      {
+        id: '19',
+        title: 'The Conjuring',
+        genre: 'Horror',
+        rating: 7.5,
+        duration: 112,
+        year: 2013,
+        poster: 'https://m.media-amazon.com/images/M/MV5BMTM3NjA1NDMyMV5BMl5BanBnXkFtZTcwMDM3NzAzOQ@@._V1_FMjpg_UX1000_.jpg',
+        price: 140,
+        nowShowing: true
+      }
+    ];
+
+    // Theater data
+    const theaters = [
+      {
+        id: '1',
+        name: 'PVR Cinemas',
+        address: 'Forum Mall, Koramangala',
+        distance: 2.5,
+        screens: 8,
+        amenities: ['Dolby Atmos', 'Recliner Seats', 'Food Court'],
+        rating: 4.2,
+        image: 'https://images.unsplash.com/photo-1489599735734-79b4d9c7e0b5?w=400'
+      },
+      {
+        id: '2',
+        name: 'INOX',
+        address: 'Phoenix Marketcity',
+        distance: 4.1,
+        screens: 6,
+        amenities: ['4DX', 'IMAX', 'Premium Seats'],
+        rating: 4.0,
+        image: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400'
+      },
+      {
+        id: '3',
+        name: 'Cinepolis',
+        address: 'Orion Mall',
+        distance: 6.2,
+        screens: 10,
+        amenities: ['VIP Lounges', 'Bar', 'Kids Zone'],
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=400'
+      }
+    ];
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadMovies();
+      lucide.createIcons();
+    });
+
+    // Load movies into the grid
+    function loadMovies() {
+      const moviesGrid = document.getElementById('moviesGrid');
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const selectedGenre = document.getElementById('genreFilter').value;
+
+      const filteredMovies = movies.filter(movie => {
+        const matchesSearch = movie.title.toLowerCase().includes(searchTerm);
+        const matchesGenre = selectedGenre === 'all' || movie.genre === selectedGenre;
+        return matchesSearch && matchesGenre;
+      });
+
+      moviesGrid.innerHTML = '';
+
+      filteredMovies.forEach(movie => {
+        const movieCard = createMovieCard(movie);
+        moviesGrid.appendChild(movieCard);
+      });
+
+      // Re-create icons for new elements
+      lucide.createIcons();
+    }
+
+    // Create movie card element
+    function createMovieCard(movie) {
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300';
+
+      card.innerHTML = `
+        <div class="relative">
+          <img src="${movie.poster}" alt="${movie.title}" class="w-full h-64 object-cover">
+          <div class="absolute top-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+            <i data-lucide="star" class="w-4 h-4 inline mr-1"></i>${movie.rating}
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">${movie.title}</h3>
+          <div class="flex items-center text-sm text-gray-600 mb-2">
+            <i data-lucide="calendar" class="w-4 h-4 mr-1"></i>${movie.year}
+            <span class="mx-2">•</span>
+            <i data-lucide="clock" class="w-4 h-4 mr-1"></i>${movie.duration}min
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-2xl font-bold text-red-600">₹${movie.price}</span>
+            <button onclick="bookMovie('${movie.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              Book Now
+            </button>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', loadMovies);
+    document.getElementById('genreFilter').addEventListener('change', loadMovies);
+
+    // Book movie function
+    function bookMovie(movieId) {
+      const movie = movies.find(m => m.id === movieId);
+      if (movie) {
+        alert(`Booking ${movie.title} for ₹${movie.price}`);
+      }
+    }
+
+    // Theater modal functions
+    function findNearbyTheaters() {
+      const modal = document.getElementById('theaterModal');
+      const content = document.getElementById('theaterContent');
+
+      content.innerHTML = `
+        <div class="space-y-4">
+          ${theaters.map(theater => `
+            <div class="border border-gray-200 rounded-lg p-4 hover:border-red-300 transition-colors">
+              <div class="flex items-start space-x-4">
+                <img src="${theater.image}" alt="${theater.name}" class="w-20 h-20 object-cover rounded-lg">
+                <div class="flex-1">
+                  <h4 class="text-lg font-semibold text-gray-900">${theater.name}</h4>
+                  <p class="text-gray-600 mb-2">${theater.address}</p>
+                  <div class="flex items-center text-sm text-gray-500 mb-2">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>${theater.distance} km away
+                    <span class="mx-2">•</span>
+                    <i data-lucide="star" class="w-4 h-4 mr-1"></i>${theater.rating}
+                  </div>
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    ${theater.amenities.slice(0, 3).map(amenity => `
+                      <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${amenity}</span>
+                    `).join('')}
+                  </div>
+                  <button onclick="selectTheater('${theater.id}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Select Theater
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeTheaterModal() {
+      document.getElementById('theaterModal').classList.add('hidden');
+    }
+
+    function selectTheater(theaterId) {
+      const theater = theaters.find(t => t.id === theaterId);
+      if (theater) {
+        alert(`Selected ${theater.name}`);
+        closeTheaterModal();
+      }
+    }
+  </script>
+</body>
+</html>

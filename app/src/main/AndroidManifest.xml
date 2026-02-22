@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 🌐 Firebase Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/app"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/app"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Project"
+        tools:targetApi="31">
+
+        <!-- 🚀 Launcher Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 👩‍💼 ADMIN SECTION -->
+        <activity android:name=".AdminLoginActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity android:name=".AdminDashboardActivity" android:exported="false" />
+        <activity android:name=".AdminTimetableActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity
+            android:name=".AdminEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+            tools:ignore="MissingClass" />
+        <activity android:name=".AdminModulePaperActivity" android:exported="false" />
+        <activity
+            android:name=".UpdateCrContactActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
+        <activity
+            android:name=".UpdateFacultyContactActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
+
+        <!-- 👨‍🏫 FACULTY SECTION -->
+        <activity android:name=".FacultyLoginSignupActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity android:name=".FacultyDashboardActivity" android:exported="false" />
+        <activity android:name=".FacultyTimetableActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity
+            android:name=".CrContactActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+            tools:ignore="MissingClass" />
+
+        <!-- 👩‍🎓 STUDENT SECTION -->
+        <activity android:name=".StudentLoginSignupActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity android:name=".StudentDashboardActivity" android:exported="false" />
+        <activity android:name=".StudentTimetableActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity android:name=".StudentFacultyContactsActivity" android:exported="false" />
+
+        <!-- 📘 QUESTION PAPER SYSTEM -->
+        <activity
+            android:name=".StudentSubjectListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
+        <activity
+            android:name=".StudentQuestionViewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar" />
+
+        <!-- 🤝 SHARED SCREENS -->
+        <activity android:name=".FacultyContactsActivity" android:exported="false" />
+        <activity android:name=".ModuleWisePapersActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+        <activity android:name=".EventReminderActivity" android:exported="false"
+            tools:ignore="MissingClass" />
+
+        <!-- 🔥 Firebase default settings -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/purple_700" />
+
+    </application>
+</manifest>

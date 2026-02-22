@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Booking - Theaters</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <h1 class="text-2xl font-bold text-red-600">MovieBook</h1>
+          </div>
+          <div class="hidden md:block ml-10">
+            <div class="flex items-baseline space-x-4">
+              <a href="home.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+              <a href="movies.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Movies</a>
+              <a href="theaters.html" class="bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Theaters</a>
+              <a href="login.html" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Theaters Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Nearby Theaters</h1>
+      <button onclick="getLocation()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+        <i data-lucide="navigation" class="w-5 h-5 inline mr-2"></i>Get My Location
+      </button>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+          <div class="relative">
+            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" id="theaterSearch" placeholder="Search theaters..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+          </div>
+        </div>
+        <div class="md:w-48">
+          <select id="sortBy" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+            <option value="distance">Sort by Distance</option>
+            <option value="rating">Sort by Rating</option>
+            <option value="name">Sort by Name</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="theatersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Theaters will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    // Theater data
+    const theaters = [
+      {
+        id: '1',
+        name: 'PVR Cinemas',
+        address: 'Forum Mall, Koramangala',
+        distance: 2.5,
+        latitude: 12.9352,
+        longitude: 77.6245,
+        screens: 8,
+        amenities: ['Dolby Atmos', 'Recliner Seats', 'Food Court'],
+        rating: 4.2,
+        image: 'https://images.unsplash.com/photo-1489599735734-79b4d9c7e0b5?w=400',
+        phone: '+91-80-1234-5678',
+        timings: '10:00 AM - 11:00 PM'
+      },
+      {
+        id: '2',
+        name: 'INOX',
+        address: 'Phoenix Marketcity',
+        distance: 4.1,
+        latitude: 12.9600,
+        longitude: 77.6410,
+        screens: 6,
+        amenities: ['4DX', 'IMAX', 'Premium Seats'],
+        rating: 4.0,
+        image: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',
+        phone: '+91-80-2345-6789',
+        timings: '11:00 AM - 11:30 PM'
+      },
+      {
+        id: '3',
+        name: 'Cinepolis',
+        address: 'Orion Mall',
+        distance: 6.2,
+        latitude: 12.9750,
+        longitude: 77.6050,
+        screens: 10,
+        amenities: ['VIP Lounges', 'Bar', 'Kids Zone'],
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=400',
+        phone: '+91-80-3456-7890',
+        timings: '10:30 AM - 12:00 AM'
+      },
+      {
+        id: '4',
+        name: 'Carnival Cinemas',
+        address: 'RT Nagar',
+        distance: 8.3,
+        latitude: 13.0220,
+        longitude: 77.5950,
+        screens: 5,
+        amenities: ['Dolby Digital', 'Parking', 'Cafeteria'],
+        rating: 3.8,
+        image: 'https://images.unsplash.com/photo-1489599735734-79b4d9c7e0b5?w=400',
+        phone: '+91-80-4567-8901',
+        timings: '11:00 AM - 10:30 PM'
+      },
+      {
+        id: '5',
+        name: 'Miraj Cinemas',
+        address: 'Sahakara Nagar',
+        distance: 5.7,
+        latitude: 13.0620,
+        longitude: 77.5800,
+        screens: 7,
+        amenities: ['3D', 'Luxury Seats', 'Restaurant'],
+        rating: 4.1,
+        image: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',
+        phone: '+91-80-5678-9012',
+        timings: '10:00 AM - 11:00 PM'
+      },
+      {
+        id: '6',
+        name: 'PVR Gold Class',
+        address: 'MG Road',
+        distance: 3.9,
+        latitude: 12.9758,
+        longitude: 77.6033,
+        screens: 4,
+        amenities: ['Gold Class Seats', 'Butler Service', 'Private Screens'],
+        rating: 4.6,
+        image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=400',
+        phone: '+91-80-6789-0123',
+        timings: '12:00 PM - 11:00 PM'
+      }
+    ];
+
+    let userLocation = null;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTheaters();
+      lucide.createIcons();
+
+      // Add event listeners
+      document.getElementById('theaterSearch').addEventListener('input', loadTheaters);
+      document.getElementById('sortBy').addEventListener('change', loadTheaters);
+    });
+
+    // Get user location
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          calculateDistances();
+          loadTheaters();
+          alert('Location updated! Theaters sorted by distance.');
+        }, function(error) {
+          alert('Unable to get your location. Please allow location access.');
+        });
+      } else {
+        alert('Geolocation is not supported by this browser.');
+      }
+    }
+
+    // Calculate distances from user location
+    function calculateDistances() {
+      if (!userLocation) return;
+
+      theaters.forEach(theater => {
+        const distance = getDistance(userLocation.latitude, userLocation.longitude, theater.latitude, theater.longitude);
+        theater.distance = Math.round(distance * 10) / 10; // Round to 1 decimal place
+      });
+    }
+
+    // Calculate distance between two points using Haversine formula
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Radius of the Earth in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c; // Distance in km
+      return distance;
+    }
+
+    // Load theaters into the grid
+    function loadTheaters() {
+      const theatersGrid = document.getElementById('theatersGrid');
+      const searchTerm = document.getElementById('theaterSearch').value.toLowerCase();
+      const sortBy = document.getElementById('sortBy').value;
+
+      let filteredTheaters = theaters.filter(theater => {
+        return theater.name.toLowerCase().includes(searchTerm) ||
+               theater.address.toLowerCase().includes(searchTerm);
+      });
+
+      // Sort theaters
+      filteredTheaters.sort((a, b) => {
+        switch(sortBy) {
+          case 'rating':
+            return b.rating - a.rating;
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'distance':
+          default:
+            return a.distance - b.distance;
+        }
+      });
+
+      theatersGrid.innerHTML = '';
+
+      filteredTheaters.forEach(theater => {
+        const theaterCard = createTheaterCard(theater);
+        theatersGrid.appendChild(theaterCard);
+      });
+
+      // Re-create icons for new elements
+      lucide.createIcons();
+    }
+
+    // Create theater card element
+    function createTheaterCard(theater) {
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300';
+
+      card.innerHTML = `
+        <div class="relative">
+          <img src="${theater.image}" alt="${theater.name}" class="w-full h-48 object-cover">
+          <div class="absolute top-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+            <i data-lucide="star" class="w-4 h-4 inline mr-1"></i>${theater.rating}
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">${theater.name}</h3>
+          <p class="text-gray-600 mb-2">${theater.address}</p>
+          <div class="flex items-center text-sm text-gray-500 mb-2">
+            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i>${theater.distance} km away
+            <span class="mx-2">•</span>
+            <i data-lucide="monitor" class="w-4 h-4 mr-1"></i>${theater.screens} screens
+          </div>
+          <div class="flex items-center text-sm text-gray-500 mb-3">
+            <i data-lucide="phone" class="w-4 h-4 mr-1"></i>${theater.phone}
+            <span class="mx-2">•</span>
+            <i data-lucide="clock" class="w-4 h-4 mr-1"></i>${theater.timings}
+          </div>
+          <div class="flex flex-wrap gap-2 mb-3">
+            ${theater.amenities.slice(0, 3).map(amenity => `
+              <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${amenity}</span>
+            `).join('')}
+            ${theater.amenities.length > 3 ? `<span class="text-gray-500 text-xs">+${theater.amenities.length - 3} more</span>` : ''}
+          </div>
+          <button onclick="selectTheater('${theater.id}')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            Select Theater
+          </button>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // Select theater function
+    function selectTheater(theaterId) {
+      const theater = theaters.find(t => t.id === theaterId);
+      if (theater) {
+        alert(`Selected ${theater.name} at ${theater.address}`);
+      }
+    }
+  </script>
+</body>
+</html>
